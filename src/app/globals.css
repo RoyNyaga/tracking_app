@@ -24,3 +24,27 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom styles for dark forms (Register, Login) to override default resets */
+.dark-form-input {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px;
+  padding: 12px 16px;
+  width: 100%;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.dark-form-input:focus {
+  outline: none !important;
+  border-color: #00F2FE !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.2) !important;
+}
+
+.dark-form-input::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
