@@ -37,7 +37,7 @@ export default function AboutPage() {
             Moving Cargo with Absolute Security
           </Typography>
           <p className="text-gray-300 max-w-2xl mx-auto text-base sm:text-lg">
-            Global Load Logistics has grown from a regional shipping dispatch center into a trusted worldwide network handling multi-modal supply chains.
+            Wide Load Logistics has grown from a regional shipping dispatch center into a trusted worldwide network handling multi-modal supply chains.
           </p>
         </Container>
       </Box>
@@ -125,6 +125,63 @@ export default function AboutPage() {
           </div>
         </div>
 
+        {/* Team Section */}
+        <div className="space-y-12 mt-24">
+          <div className="text-center max-w-xl mx-auto">
+            <span className="text-cyan-600 font-semibold text-sm uppercase tracking-wider">Leadership Team</span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Meet Our Executives</h2>
+            <p className="text-gray-500 text-sm mt-2">
+              The logistics experts driving operational precision and custom supply chain designs.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                name: 'Arthur Jenkins',
+                role: 'Chief Executive Officer & Founder',
+                image: '/team3.jpeg',
+                bio: 'Leading strategic vision and global shipping network expansion.'
+              },
+              {
+                name: 'Robert Vance',
+                role: 'Head of Global Operations',
+                image: '/team1.jpeg',
+                bio: 'Overseeing multi-modal transit pathways and cargo safety.'
+              },
+              {
+                name: 'Michael Rostov',
+                role: 'Chief Technology Officer',
+                image: '/team2.jpeg',
+                bio: 'Designing our digital tracking portal and cloud infrastructure.'
+              },
+              {
+                name: 'Diana Sterling',
+                role: 'Director of Client Logistics',
+                image: '/team4.jpeg',
+                bio: 'Structuring custom supply chain solutions for corporate partners.'
+              }
+            ].map((member, idx) => (
+              <Card key={idx} className="border border-gray-200 shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-shadow bg-white flex flex-col h-full">
+                <div className="relative h-64 w-full bg-slate-100 overflow-hidden">
+                  <img 
+                    src={member.image} 
+                    alt={member.name} 
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+                <CardContent className="p-5 flex-grow flex flex-col justify-between">
+                  <div className="space-y-1">
+                    <h3 className="font-extrabold text-slate-800 text-base leading-snug">{member.name}</h3>
+                    <p className="text-cyan-600 font-semibold text-xs">{member.role}</p>
+                  </div>
+                  <p className="text-gray-600 text-xs mt-3 leading-relaxed">{member.bio}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
         {/* Support Callout */}
         <Box className="mt-20 bg-[#0A192F]/5 border border-[#0A192F]/10 rounded-2xl p-8 text-center space-y-4">
           <Award className="h-10 w-10 text-cyan-500 mx-auto" />
@@ -133,8 +190,8 @@ export default function AboutPage() {
             Have custom cargo requirements or compliance questions? Send documents directly to our logistics team:
           </p>
           <div className="font-bold text-lg text-cyan-600">
-            <a href="mailto:globalloadlogistic@gmail.com" className="hover:underline">
-              globalloadlogistic@gmail.com
+            <a href="mailto:wideloadlogistic@gmail.com" className="hover:underline">
+              wideloadlogistic@gmail.com
             </a>
           </div>
         </Box>

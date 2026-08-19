@@ -19,6 +19,7 @@ export default function ShipmentsPage() {
   const [selectedShipment, setSelectedShipment] = useState<any>(null);
   const [newLocation, setNewLocation] = useState('');
   const [newTime, setNewTime] = useState('');
+  const [newStatus, setNewStatus] = useState('pending');
 
   // Drawer View Panel States
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -83,6 +84,7 @@ export default function ShipmentsPage() {
         .from('shipments')
         .update({
           location: newLocation,
+          status: newStatus,
           time: newTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           updated_at: new Date().toISOString()
         })
@@ -100,6 +102,7 @@ export default function ShipmentsPage() {
     setSelectedShipment(shipment);
     setNewLocation(shipment.location || '');
     setNewTime(shipment.time || '');
+    setNewStatus(shipment.status || 'pending');
     setUpdateDialogOpen(true);
   };
 
@@ -121,6 +124,21 @@ export default function ShipmentsPage() {
       console.error("Failed to load packages for shipment:", err);
     } finally {
       setPackagesLoading(false);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'delivered': return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+      case 'pending': return 'bg-amber-100 text-amber-800 border border-amber-200';
+      case 'on_hold': return 'bg-orange-100 text-orange-800 border border-orange-200';
+      case 'cancelled': return 'bg-rose-100 text-rose-800 border border-rose-200';
+      case 'picked_up': return 'bg-blue-100 text-blue-800 border border-blue-200';
+      case 'out_for_deliver': return 'bg-indigo-100 text-indigo-800 border border-indigo-200';
+      case 'in_transit': return 'bg-sky-100 text-sky-800 border border-sky-200';
+      case 'enroute': return 'bg-violet-100 text-violet-800 border border-violet-200';
+      case 'returned': return 'bg-slate-100 text-slate-800 border border-slate-200';
+      default: return 'bg-slate-100 text-slate-800 border border-slate-200';
     }
   };
 
@@ -183,6 +201,7 @@ export default function ShipmentsPage() {
                     <TableCell className="font-bold text-slate-800">Reference No</TableCell>
                     <TableCell className="font-bold text-slate-800">Route (Origin / Dest)</TableCell>
                     <TableCell className="font-bold text-slate-800">Shipper / Receiver</TableCell>
+                    <TableCell className="font-bold text-slate-800">Status</TableCell>
                     <TableCell className="font-bold text-slate-800">Current Location</TableCell>
                     <TableCell className="font-bold text-slate-800">Visibility</TableCell>
                     <TableCell align="center" className="font-bold text-slate-800">Actions</TableCell>
@@ -199,6 +218,13 @@ export default function ShipmentsPage() {
                       <TableCell>
                         <div className="text-sm"><span className="text-gray-400">From:</span> {s.shipper_name}</div>
                         <div className="text-sm"><span className="text-gray-400">To:</span> {s.receiver_name}</div>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
+                          getStatusColor(s.status)
+                        }`}>
+                          {s.status?.replace('_', ' ') || 'pending'}
+                        </span>
                       </TableCell>
                       <TableCell className="font-semibold text-slate-800">
                         {s.location || 'Pending'}
@@ -256,6 +282,25 @@ export default function ShipmentsPage() {
               placeholder="e.g. New York Hub, In Transit"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-500"
             />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-gray-500">Shipment Status</label>
+            <select
+              value={newStatus}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewStatus(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-500 bg-white font-semibold text-sm"
+            >
+              <option value="pending">Pending</option>
+              <option value="picked_up">Picked Up</option>
+              <option value="on_hold">On Hold</option>
+              <option value="out_for_deliver">Out for Delivery</option>
+              <option value="in_transit">In Transit</option>
+              <option value="enroute">Enroute</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="delivered">Delivered</option>
+              <option value="returned">Returned</option>
+            </select>
           </div>
 
           <div className="space-y-1">
@@ -421,6 +466,7 @@ export default function ShipmentsPage() {
                       { label: 'Pickup Time', val: selectedShipment.pickup_time || '-' },
                       { label: 'Departure Time', val: selectedShipment.departure_time || '-' },
                       { label: 'Est. Delivery Date', val: selectedShipment.expected_delivery_date || '-' },
+                      { label: 'Status', val: selectedShipment.status?.replace('_', ' ') || 'pending' },
                       { label: 'Current Location', val: selectedShipment.location || 'Pending' },
                       { label: 'Visibility Status', val: selectedShipment.visibility_status || 'draft' },
                     ].map((spec, idx) => (

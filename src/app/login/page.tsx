@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
@@ -13,6 +13,15 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Redirect if already authenticated
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        router.push('/companies');
+      }
+    });
+  }, [router]);
+
   const loginMutation = useMutation({
     mutationFn: async () => {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -20,7 +29,7 @@ export default function LoginPage() {
       return data;
     },
     onSuccess: () => {
-      router.push('/dashboard');
+      router.push('/companies');
     }
   });
 
@@ -34,10 +43,10 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/10 via-slate-900 to-[#0A192F]" />
       
       <Container maxWidth="xs" className="relative z-10 space-y-8">
-        <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center space-x-2 text-white font-bold text-2xl">
-            <Ship className="h-8 w-8 text-cyan-400" />
-            <span>Global Load Logistics</span>
+        <div className="text-center space-y-3">
+          <Link href="/" className="inline-flex items-center space-x-3 text-white font-bold text-2xl">
+            <img src="/main-logo.png" alt="Wide Load Logistics Logo" className="h-10 w-auto object-contain" />
+            <span>Wide Load Logistics</span>
           </Link>
           <h2 className="text-xl font-bold text-gray-300">Admin & Collaborator Login</h2>
         </div>

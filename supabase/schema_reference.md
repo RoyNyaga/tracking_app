@@ -52,6 +52,7 @@ create table public.shipments (
   time text,
   visibility_status text default 'draft' not null check (visibility_status in ('draft', 'published')),
   location text default 'Pending' not null,
+  status public.shipment_status default 'pending'::public.shipment_status not null,
   shipper_name text,
   shipper_phone_number text,
   shipper_address text,

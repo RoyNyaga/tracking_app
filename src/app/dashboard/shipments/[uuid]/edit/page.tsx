@@ -82,7 +82,7 @@ export default function EditShipmentPage({ params }: EditShipmentPageProps) {
   const [quantity, setQuantity] = useState('');
   const [paymentMode, setPaymentMode] = useState('Bank Transfer');
   const [totalFreight, setTotalFreight] = useState('');
-  const [carrier, setCarrier] = useState('DHL');
+  const [carrier, setCarrier] = useState('Wide Load Logistics');
   const [departureTime, setDepartureTime] = useState('');
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
@@ -92,6 +92,7 @@ export default function EditShipmentPage({ params }: EditShipmentPageProps) {
   const [comments, setComments] = useState('');
   const [visibilityStatus, setVisibilityStatus] = useState('draft');
   const [location, setLocation] = useState('Pending');
+  const [status, setStatus] = useState('pending');
 
   const [copiedCode, setCopiedCode] = useState(false);
 
@@ -180,6 +181,7 @@ export default function EditShipmentPage({ params }: EditShipmentPageProps) {
       setComments(shipment.comments || '');
       setVisibilityStatus(shipment.visibility_status || 'draft');
       setLocation(shipment.location || 'Pending');
+      setStatus(shipment.status || 'pending');
 
       const parsedDep = parseTimeStr(shipment.departure_time);
       setDepHour(parsedDep.hour);
@@ -269,6 +271,7 @@ export default function EditShipmentPage({ params }: EditShipmentPageProps) {
           comments,
           visibility_status: visibilityStatus,
           location: location,
+          status: status,
           updated_at: new Date().toISOString()
         })
         .eq('uuid', uuid);
@@ -458,7 +461,7 @@ export default function EditShipmentPage({ params }: EditShipmentPageProps) {
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Carrier Company</label>
                 <select value={carrier} onChange={(e) => setCarrier(e.target.value)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-slate-800 focus:outline-none focus:border-cyan-500 bg-gray-50/50">
-                  {['Deli Trans', 'DHL', 'USPS', 'FedEx', 'TNT', 'UPS'].map(c => (
+                  {['Wide Load Logistics', 'Deli Trans', 'DHL', 'USPS', 'FedEx', 'TNT', 'UPS'].map(c => (
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
@@ -627,6 +630,21 @@ export default function EditShipmentPage({ params }: EditShipmentPageProps) {
                 <select value={visibilityStatus} onChange={(e) => setVisibilityStatus(e.target.value)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-slate-800 focus:outline-none focus:border-cyan-500 bg-gray-50/50 font-semibold">
                   <option value="draft">Draft (Admin Only)</option>
                   <option value="published">Published (Publicly Trackable)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Shipment Status *</label>
+                <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-slate-800 focus:outline-none focus:border-cyan-500 bg-gray-50/50 font-semibold">
+                  <option value="pending">Pending</option>
+                  <option value="picked_up">Picked Up</option>
+                  <option value="on_hold">On Hold</option>
+                  <option value="out_for_deliver">Out for Delivery</option>
+                  <option value="in_transit">In Transit</option>
+                  <option value="enroute">Enroute</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="returned">Returned</option>
                 </select>
               </div>
 

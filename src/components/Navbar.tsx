@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Ship, Menu, X } from 'lucide-react';
 import { AppBar, Toolbar, IconButton, Button, Box, Drawer, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { supabase } from '@/lib/supabase';
 
 const navItems = [
   { name: 'Home', path: '/' },
@@ -15,7 +16,20 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -32,9 +46,9 @@ export default function Navbar() {
     <AppBar position="sticky" sx={{ bgcolor: '#0A192F', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: 'none' }}>
       <Toolbar className="max-w-7xl w-full mx-auto justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2 text-white font-bold text-lg sm:text-xl">
-          <Ship className="h-6 w-6 text-cyan-400" />
-          <span>Global Load Logistics</span>
+        <Link href="/" className="flex items-center space-x-3 text-white font-bold text-lg sm:text-xl">
+          <img src="/main-logo.png" alt="Wide Load Logistics Logo" className="h-8 w-auto object-contain" />
+          <span>Wide Load Logistics</span>
         </Link>
 
         {/* Desktop Menu */}
@@ -50,7 +64,7 @@ export default function Navbar() {
           ))}
           <Button 
             component={Link} 
-            href="/login" 
+            href={isAuthenticated ? "/companies" : "/login"} 
             variant="contained" 
             sx={{ 
               bgcolor: '#00F2FE', 
@@ -60,7 +74,7 @@ export default function Navbar() {
               '&:hover': { bgcolor: '#00cce0' }
             }}
           >
-            Dashboard Login
+            {isAuthenticated ? 'Dashboard' : 'Dashboard Login'}
           </Button>
         </Box>
 
@@ -108,7 +122,7 @@ export default function Navbar() {
             <ListItem disablePadding sx={{ mt: 2, px: 2 }}>
               <Button 
                 component={Link} 
-                href="/login" 
+                href={isAuthenticated ? "/companies" : "/login"} 
                 fullWidth 
                 variant="contained"
                 sx={{ 
@@ -118,7 +132,7 @@ export default function Navbar() {
                   textTransform: 'none'
                 }}
               >
-                Dashboard Login
+                {isAuthenticated ? 'Dashboard' : 'Dashboard Login'}
               </Button>
             </ListItem>
           </List>
