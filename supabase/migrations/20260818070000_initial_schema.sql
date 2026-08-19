@@ -28,9 +28,9 @@ create policy "Allow public read access to companies" on public.companies for se
 create policy "Allow authenticated inserts to companies" on public.companies for insert with check (auth.uid() = created_by);
 create policy "Allow owners update access to companies" on public.companies for update using (true); -- basic permissive rule for dev
 
--- Seed default company for Global Load Logistics
+-- Seed default company for Wide Load Logistics
 insert into public.companies (id, name, tenant_slug)
-values ('11111111-1111-1111-1111-111111111111', 'Global Load Logistics', 'global-load-logistics')
+values ('11111111-1111-1111-1111-111111111111', 'Wide Load Logistics', 'wide-load-logistics')
 on conflict (id) do nothing;
 
 -- 3. Company Collaborators Table

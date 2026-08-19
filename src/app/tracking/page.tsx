@@ -15,9 +15,10 @@ const GLOBAL_LOGISTICS_COMPANY_ID = process.env.NEXT_PUBLIC_GLOBAL_LOGISTICS_COM
 export default function TrackingPage() {
   const [refInput, setRefInput] = useState('');
   const [searchRef, setSearchRef] = useState('');
+  const [triggerId, setTriggerId] = useState(0);
 
   const { data: shipment, isLoading, isError, error } = useQuery({
-    queryKey: ['tracking', searchRef],
+    queryKey: ['tracking', searchRef, triggerId],
     queryFn: async () => {
       if (!searchRef) return null;
       
@@ -47,18 +48,35 @@ export default function TrackingPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (refInput.trim()) {
-      setSearchRef(refInput.trim().toUpperCase());
+    const cleanInput = refInput.trim().toUpperCase();
+    if (cleanInput) {
+      setSearchRef(cleanInput);
+      setTriggerId((prev) => prev + 1);
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'delivered': return 'bg-green-500 text-white';
-      case 'pending': return 'bg-yellow-500 text-slate-900';
-      case 'cancelled': return 'bg-red-500 text-white';
+      case 'delivered': return 'bg-emerald-500 text-white';
+      case 'pending': return 'bg-amber-500 text-slate-950';
+      case 'picked_up': return 'bg-blue-500 text-white';
+      case 'on_hold': return 'bg-orange-500 text-white';
+      case 'out_for_deliver': return 'bg-indigo-500 text-white';
+      case 'in_transit': return 'bg-sky-500 text-white';
+      case 'enroute': return 'bg-violet-500 text-white';
+      case 'cancelled': return 'bg-rose-500 text-white';
+      case 'returned': return 'bg-slate-500 text-white';
       default: return 'bg-cyan-500 text-white';
     }
+  };
+
+  const getActiveStepIndex = (status: string) => {
+    const s = status?.toLowerCase();
+    if (s === 'delivered') return 4;
+    if (s === 'out_for_deliver') return 3;
+    if (s === 'in_transit' || s === 'enroute') return 2;
+    if (s === 'picked_up') return 1;
+    return 0; // pending, on_hold, cancelled, returned (defaults to 0, or shown in alert)
   };
 
   return (
@@ -136,7 +154,7 @@ export default function TrackingPage() {
               <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto" />
               <h3 className="text-xl font-bold text-slate-900">Shipment Not Found</h3>
               <p className="text-gray-600 text-sm max-w-sm mx-auto">
-                We could not find any active shipment under reference number <span className="font-semibold text-cyan-600">"{searchRef}"</span> for Global Load Logistics.
+                We could not find any active shipment under reference number <span className="font-semibold text-cyan-600">"{searchRef}"</span> for Wide Load Logistics.
               </p>
             </motion.div>
           )}
@@ -156,12 +174,97 @@ export default function TrackingPage() {
                     <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active Reference</span>
                     <h2 className="text-2xl font-black text-slate-900">{shipment.carrier_reference_no}</h2>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-500">Current Status/Location:</span>
-                    <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${getStatusColor(shipment.location)}`}>
-                      {shipment.location || 'Pending'}
-                    </span>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 px-3.5 py-1.5 rounded-xl">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Status:</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${getStatusColor(shipment.status)}`}>
+                        {shipment.status?.replace('_', ' ') || 'pending'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 px-3.5 py-1.5 rounded-xl">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Location:</span>
+                      <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                        {shipment.location || 'Pending'}
+                      </span>
+                    </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Progress Stepper Card */}
+              <Card className="border border-gray-200 shadow-sm rounded-xl bg-white overflow-hidden">
+                <CardContent className="p-6 sm:p-8">
+                  {['cancelled', 'on_hold', 'returned'].includes(shipment.status?.toLowerCase()) ? (
+                    <div className="flex items-center gap-4 bg-amber-50/50 border border-amber-250 rounded-xl p-4 sm:p-6">
+                      <div className="p-3 bg-amber-500/10 rounded-full">
+                        <AlertCircle className="h-6 w-6 text-amber-650" />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-base font-extrabold text-amber-900 uppercase tracking-wider">
+                          Shipment Status: {shipment.status?.replace('_', ' ')}
+                        </h3>
+                        <p className="text-amber-700 text-sm">
+                          {shipment.status?.toLowerCase() === 'on_hold' && 'This cargo has been temporarily placed on hold. Please check the comments below or reach out to support.'}
+                          {shipment.status?.toLowerCase() === 'cancelled' && 'This shipment has been cancelled by the operator.'}
+                          {shipment.status?.toLowerCase() === 'returned' && 'This cargo was returned to the shipper.'}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Delivery Progress</h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-0 relative">
+                        {/* Connecting Line for Desktop */}
+                        <div className="hidden md:block absolute top-[15px] left-[10%] right-[10%] h-0.5 bg-slate-100 -z-0">
+                          <div 
+                            className="h-full bg-cyan-400 transition-all duration-500" 
+                            style={{ width: `${(getActiveStepIndex(shipment.status) / 4) * 100}%` }}
+                          />
+                        </div>
+
+                        {/* Steps mapping */}
+                        {[
+                          { label: 'Pending', desc: 'Cargo Registered' },
+                          { label: 'Picked Up', desc: 'In Transit Custody' },
+                          { label: 'In Transit', desc: 'Enroute to hub' },
+                          { label: 'Out for Delivery', desc: 'With Local Courier' },
+                          { label: 'Delivered', desc: 'Handed Over' }
+                        ].map((step, idx) => {
+                          const activeIndex = getActiveStepIndex(shipment.status);
+                          const isCompleted = idx < activeIndex;
+                          const isActive = idx === activeIndex;
+                          
+                          return (
+                            <div key={idx} className="flex md:flex-col items-center gap-3 md:gap-2 text-left md:text-center relative z-10">
+                              <div 
+                                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${
+                                  isCompleted 
+                                    ? 'bg-cyan-500 text-white shadow-sm shadow-cyan-500/20' 
+                                    : isActive 
+                                      ? 'bg-[#0A192F] text-white ring-4 ring-cyan-100' 
+                                      : 'bg-slate-100 text-slate-400 border border-slate-200'
+                                }`}
+                              >
+                                {isCompleted ? '✓' : idx + 1}
+                              </div>
+                              
+                              <div className="space-y-0.5">
+                                <p className={`text-xs font-black uppercase tracking-wider ${
+                                  isActive ? 'text-slate-800' : isCompleted ? 'text-cyan-600' : 'text-slate-400'
+                                }`}>
+                                  {step.label}
+                                </p>
+                                <p className="text-[10px] text-gray-500 hidden sm:block">
+                                  {step.desc}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -181,9 +284,14 @@ export default function TrackingPage() {
                         <div className="relative">
                           <span className="absolute -left-[31px] top-1.5 flex h-4 w-4 rounded-full bg-cyan-400 border-2 border-white ring-4 ring-cyan-100" />
                           <div className="space-y-1">
-                            <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wide">
-                              {shipment.location || 'Pending'}
-                            </h4>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h4 className="font-extrabold text-slate-900 text-sm uppercase tracking-wider">
+                                {shipment.location || 'Pending'}
+                              </h4>
+                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider ${getStatusColor(shipment.status)}`}>
+                                {shipment.status?.replace('_', ' ') || 'pending'}
+                              </span>
+                            </div>
                             <p className="text-gray-600 text-sm flex items-center gap-1">
                               <MapPin className="h-3.5 w-3.5 text-gray-400" /> Current Location Check-in
                             </p>

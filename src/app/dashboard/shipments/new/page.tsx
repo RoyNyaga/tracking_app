@@ -71,7 +71,7 @@ export default function NewShipmentPage() {
   const [quantity, setQuantity] = useState('');
   const [paymentMode, setPaymentMode] = useState('Bank Transfer');
   const [totalFreight, setTotalFreight] = useState('');
-  const [carrier, setCarrier] = useState('DHL');
+  const [carrier, setCarrier] = useState('Wide Load Logistics');
   const [departureTime, setDepartureTime] = useState('');
   const [depHour, setDepHour] = useState('08');
   const [depMinute, setDepMinute] = useState('30');
@@ -96,6 +96,7 @@ export default function NewShipmentPage() {
   const [comments, setComments] = useState('');
   const [visibilityStatus, setVisibilityStatus] = useState('draft');
   const [location, setLocation] = useState('Pending');
+  const [status, setStatus] = useState('pending');
 
   // Packages array state
   const [packages, setPackages] = useState<any[]>([
@@ -145,6 +146,7 @@ export default function NewShipmentPage() {
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           visibility_status: visibilityStatus,
           location: location || 'Pending',
+          status,
           
           shipper_name: shipperName,
           shipper_phone_number: shipperPhone,
@@ -308,7 +310,7 @@ export default function NewShipmentPage() {
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Carrier Company</label>
                 <select value={carrier} onChange={(e) => setCarrier(e.target.value)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-slate-800 focus:outline-none focus:border-cyan-500 bg-gray-50/50">
-                  {['Deli Trans', 'DHL', 'USPS', 'FedEx', 'TNT', 'UPS'].map(c => (
+                  {['Wide Load Logistics', 'Deli Trans', 'DHL', 'USPS', 'FedEx', 'TNT', 'UPS'].map(c => (
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
@@ -512,6 +514,21 @@ export default function NewShipmentPage() {
                 <select value={visibilityStatus} onChange={(e) => setVisibilityStatus(e.target.value)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-slate-800 focus:outline-none focus:border-cyan-500 bg-gray-50/50 font-semibold">
                   <option value="draft">Draft (Admin Only)</option>
                   <option value="published">Published (Publicly Trackable)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Shipment Status *</label>
+                <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-slate-800 focus:outline-none focus:border-cyan-500 bg-gray-50/50 font-semibold">
+                  <option value="pending">Pending</option>
+                  <option value="picked_up">Picked Up</option>
+                  <option value="on_hold">On Hold</option>
+                  <option value="out_for_deliver">Out for Delivery</option>
+                  <option value="in_transit">In Transit</option>
+                  <option value="enroute">Enroute</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="returned">Returned</option>
                 </select>
               </div>
 

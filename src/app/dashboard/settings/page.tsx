@@ -147,25 +147,35 @@ export default function WorkspaceSettingsPage() {
               {isLoading ? (
                 <div className="py-6 text-center text-gray-500">Loading configurations...</div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <TextField
-                    fullWidth
-                    label="Company Name"
-                    placeholder="e.g. Global Load Logistics"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Company Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                      placeholder="e.g. Wide Load Logistics"
+                    />
+                  </div>
 
-                  <TextField
-                    fullWidth
-                    label="Client URL Slug (lowercase alphanumeric)"
-                    placeholder="e.g. globalloadlogistics"
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    required
-                    helperText={slug ? `Your tracking portal tenant address: /tracking?tenant=${slug.toLowerCase().replace(/[^a-z0-9-]/g, '')}` : ''}
-                  />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Client URL Slug (lowercase alphanumeric)</label>
+                    <input
+                      type="text"
+                      required
+                      value={slug}
+                      onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                      placeholder="e.g. wideloadlogistics"
+                    />
+                    {slug && (
+                      <p className="text-xs text-slate-500 mt-1.5 font-medium">
+                        Your tracking portal tenant address: <span className="text-cyan-600 font-bold">/tracking?tenant={slug.toLowerCase().replace(/[^a-z0-9-]/g, '')}</span>
+                      </p>
+                    )}
+                  </div>
 
                   {/* Notifications */}
                   {createCompanyMutation.isSuccess && (

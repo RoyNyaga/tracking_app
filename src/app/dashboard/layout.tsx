@@ -74,12 +74,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     enabled: !!session?.user?.id,
   });
 
-  // Redirect to dashboard list if accessing a deep company page without an active company
+  // Redirect to workspace selector if accessing any dashboard page without a valid active company
   useEffect(() => {
-    if (!activeCompany && pathname !== '/dashboard' && !companiesLoading && !authLoading) {
-      router.push('/dashboard');
+    if (!companiesLoading && !authLoading) {
+      if (!activeCompany) {
+        router.push('/companies');
+      } else if (companies) {
+        const hasAccess = companies.some((c: any) => c.id === activeCompany);
+        if (!hasAccess) {
+          localStorage.removeItem('active_company_id');
+          setActiveCompany('');
+          router.push('/companies');
+        }
+      }
     }
-  }, [activeCompany, pathname, companiesLoading, authLoading, router]);
+  }, [activeCompany, companies, companiesLoading, authLoading, router]);
 
   const handleCompanyChange = (id: string) => {
     setActiveCompany(id);
@@ -92,7 +101,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     localStorage.removeItem('active_company_id');
     window.dispatchEvent(new Event('storage'));
     setMobileOpen(false);
-    router.push('/dashboard');
+    router.push('/companies');
   };
 
   const handleLogout = async () => {
@@ -113,14 +122,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { text: 'Workspace Settings', icon: <Settings className="h-5 w-5" />, path: '/dashboard/settings' },
   ];
 
+  const activeCompanyData = companies?.find((c: any) => c.id === activeCompany);
+
   // Sidebar content (reused for desktop permanent & mobile temporary drawers)
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box className="p-6 border-b border-white/5">
-        <Link href="/dashboard" className="flex items-center space-x-2 text-white font-black text-lg">
-          <Ship className="h-6 w-6 text-cyan-400" />
-          <span>GLL Panel</span>
+      <Box className="p-6 border-b border-white/5 space-y-2">
+        <Link href="/" className="flex items-center space-x-3 text-white font-black text-lg">
+          <img src="/main-logo.png" alt="Wide Load Logistics Logo" className="h-8 w-auto object-contain bg-slate-900/50 p-1 rounded" />
+          <span>WLL Panel</span>
         </Link>
+        {activeCompanyData?.name && (
+          <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider bg-cyan-950/40 border border-cyan-800/40 px-2 py-0.5 rounded inline-block max-w-full truncate">
+            {activeCompanyData.name}
+          </div>
+        )}
       </Box>
       <List className="px-4 py-6 space-y-1 flex-grow">
         {menuItems.map((item) => {
@@ -217,10 +233,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </IconButton>
             )}
             {!showSidebar && (
-              <Ship className="h-6 w-6 text-cyan-600 mr-2" />
-            )}
+               <img src="/main-logo.png" alt="Wide Load Logistics Logo" className="h-6 w-auto object-contain mr-2" />
+             )}
             <Typography variant="h6" noWrap component="div" className="font-bold text-slate-800 text-base sm:text-lg">
-              {showSidebar ? 'Control Center' : 'Global Load Logistics'}
+              {showSidebar ? 'Control Center' : 'Wide Load Logistics'}
             </Typography>
           </Box>
 

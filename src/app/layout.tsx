@@ -4,8 +4,11 @@ import QueryProvider from "@/components/QueryProvider";
 import ThemeRegistry from "@/components/ThemeRegistry";
 
 export const metadata: Metadata = {
-  title: "Global Load Logistics | Smart Cargo Tracking",
-  description: "Global Load Logistics connects supply chains worldwide. Real-time multi-package tracking, state-of-the-art warehousing, and optimized freight paths.",
+  title: "Wide Load Logistics | Smart Cargo Tracking",
+  description: "Wide Load Logistics connects supply chains worldwide. Real-time multi-package tracking, state-of-the-art warehousing, and optimized freight paths.",
+  icons: {
+    icon: "/tab-icon.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

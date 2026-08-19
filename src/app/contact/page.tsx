@@ -78,8 +78,8 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="text-slate-900 font-bold text-sm">General Inquiries</h4>
-                  <a href="mailto:globalloadlogistic@gmail.com" className="text-cyan-600 text-base font-medium hover:underline">
-                    globalloadlogistic@gmail.com
+                  <a href="mailto:wideloadlogistic@gmail.com" className="text-cyan-600 text-base font-medium hover:underline">
+                    wideloadlogistic@gmail.com
                   </a>
                 </div>
               </div>
@@ -90,7 +90,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="text-slate-900 font-bold text-sm">Telephone Hotline</h4>
-                  <p className="text-gray-600 text-base font-medium">+1 (800) 555-LOAD</p>
+                  <p className="text-gray-600 text-base font-medium">+1 (857) 357-5259</p>
                 </div>
               </div>
 
@@ -101,7 +101,7 @@ export default function ContactPage() {
                 <div>
                   <h4 className="text-slate-900 font-bold text-sm">Corporate Headquarters</h4>
                   <p className="text-gray-600 text-base leading-relaxed">
-                    100 Logistics Blvd, Suite 400,<br />New York, NY 10001
+                    555 California St, Suite 300,<br />San Francisco, CA 94104
                   </p>
                 </div>
               </div>
@@ -171,7 +171,7 @@ export default function ContactPage() {
                       {contactMutation.isSuccess && (
                         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                           <Alert severity="success" icon={<CheckCircle className="h-4 w-4" />} className="mt-4">
-                            Your message has been submitted to Global Load Logistics!
+                            Your message has been submitted to Wide Load Logistics!
                           </Alert>
                         </motion.div>
                       )}
