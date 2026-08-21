@@ -191,87 +191,75 @@ export default function TrackingPage() {
                 </CardContent>
               </Card>
 
-              {/* Progress Stepper Card */}
-              <Card className="border border-gray-200 shadow-sm rounded-xl bg-white overflow-hidden">
-                <CardContent className="p-6 sm:p-8">
-                  {['cancelled', 'on_hold', 'returned'].includes(shipment.status?.toLowerCase()) ? (
-                    <div className="flex items-center gap-4 bg-amber-50/50 border border-amber-250 rounded-xl p-4 sm:p-6">
-                      <div className="p-3 bg-amber-500/10 rounded-full">
+              {/* Status Alert Card (only for Cancelled, On Hold, Returned) */}
+              {['cancelled', 'on_hold', 'returned'].includes(shipment.status?.toLowerCase()) && (
+                <Card className="border border-amber-200 shadow-sm rounded-xl bg-amber-50/30 overflow-hidden">
+                  <CardContent className="p-6 sm:p-8">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-amber-500/10 rounded-full mt-0.5">
                         <AlertCircle className="h-6 w-6 text-amber-650" />
                       </div>
-                      <div className="space-y-1">
-                        <h3 className="text-base font-extrabold text-amber-900 uppercase tracking-wider">
-                          Shipment Status: {shipment.status?.replace('_', ' ')}
-                        </h3>
-                        <p className="text-amber-700 text-sm">
-                          {shipment.status?.toLowerCase() === 'on_hold' && 'This cargo has been temporarily placed on hold. Please check the comments below or reach out to support.'}
-                          {shipment.status?.toLowerCase() === 'cancelled' && 'This shipment has been cancelled by the operator.'}
-                          {shipment.status?.toLowerCase() === 'returned' && 'This cargo was returned to the shipper.'}
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Delivery Progress</h3>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-0 relative">
-                        {/* Connecting Line for Desktop */}
-                        <div className="hidden md:block absolute top-[15px] left-[10%] right-[10%] h-0.5 bg-slate-100 -z-0">
-                          <div 
-                            className="h-full bg-cyan-400 transition-all duration-500" 
-                            style={{ width: `${(getActiveStepIndex(shipment.status) / 4) * 100}%` }}
-                          />
+                      <div className="space-y-3 flex-1">
+                        <div>
+                          <h3 className="text-base font-extrabold text-amber-900 uppercase tracking-wider">
+                            Shipment Status: {shipment.status?.replace('_', ' ')}
+                          </h3>
+                          <p className="text-amber-700 text-sm mt-1">
+                            {shipment.status?.toLowerCase() === 'on_hold' && 'This cargo has been temporarily placed on hold.'}
+                            {shipment.status?.toLowerCase() === 'cancelled' && 'This shipment has been cancelled by the operator.'}
+                            {shipment.status?.toLowerCase() === 'returned' && 'This cargo was returned to the shipper.'}
+                          </p>
                         </div>
 
-                        {/* Steps mapping */}
-                        {[
-                          { label: 'Pending', desc: 'Cargo Registered' },
-                          { label: 'Picked Up', desc: 'In Transit Custody' },
-                          { label: 'In Transit', desc: 'Enroute to hub' },
-                          { label: 'Out for Delivery', desc: 'With Local Courier' },
-                          { label: 'Delivered', desc: 'Handed Over' }
-                        ].map((step, idx) => {
-                          const activeIndex = getActiveStepIndex(shipment.status);
-                          const isCompleted = idx < activeIndex;
-                          const isActive = idx === activeIndex;
-                          
-                          return (
-                            <div key={idx} className="flex md:flex-col items-center gap-3 md:gap-2 text-left md:text-center relative z-10">
-                              <div 
-                                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${
-                                  isCompleted 
-                                    ? 'bg-cyan-500 text-white shadow-sm shadow-cyan-500/20' 
-                                    : isActive 
-                                      ? 'bg-[#0A192F] text-white ring-4 ring-cyan-100' 
-                                      : 'bg-slate-100 text-slate-400 border border-slate-200'
-                                }`}
-                              >
-                                {isCompleted ? '✓' : idx + 1}
-                              </div>
-                              
-                              <div className="space-y-0.5">
-                                <p className={`text-xs font-black uppercase tracking-wider ${
-                                  isActive ? 'text-slate-800' : isCompleted ? 'text-cyan-600' : 'text-slate-400'
-                                }`}>
-                                  {step.label}
-                                </p>
-                                <p className="text-[10px] text-gray-500 hidden sm:block">
-                                  {step.desc}
-                                </p>
-                              </div>
+                        {/* Reason / Comments at the top when on hold */}
+                        <div className="bg-white/80 border border-amber-200/60 rounded-lg p-4 space-y-3 shadow-sm">
+                          {shipment.comments && (
+                            <div>
+                              <span className="text-[10px] font-bold text-amber-900/60 uppercase tracking-wider block mb-0.5">Dispatcher Comments / Reason</span>
+                              <span className="text-sm font-semibold text-slate-800 whitespace-pre-line">{shipment.comments}</span>
                             </div>
-                          );
-                        })}
+                          )}
+                          {!shipment.comments && (
+                            <span className="text-xs text-amber-800 italic">No additional comments or reasons provided.</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Main Layout Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 {/* Left Column: Shipment specifications & Timeline */}
                 <div className="lg:col-span-8 space-y-8">
+                  {/* Shipment Description & Comments */}
+                  <Card className="border border-gray-200 shadow-sm rounded-xl bg-white">
+                    <CardContent className="p-6 space-y-4">
+                      <div>
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <Package className="h-4 w-4 text-cyan-500" /> Shipment Description
+                        </h3>
+                        <p className="text-slate-800 text-sm font-semibold">
+                          {shipment.product || 'No description provided.'}
+                        </p>
+                      </div>
+                      {shipment.comments && (
+                        <>
+                          <Divider />
+                          <div>
+                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                              <FileText className="h-4 w-4 text-cyan-500" /> Dispatcher Comments
+                            </h3>
+                            <p className="text-slate-600 text-sm font-medium whitespace-pre-line">
+                              {shipment.comments}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+
                   {/* Timeline / Live Status */}
                   <Card className="border border-gray-200 shadow-sm rounded-xl bg-white">
                     <CardContent className="p-6">
